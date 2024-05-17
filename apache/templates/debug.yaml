@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: apache
+  name: debugbox
   namespace: apache
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: apache
+      app: debugbox
   template:
     metadata:
       labels:
-        app: apache
+        app: debugbox
     spec:
       containers:
       - name: apache
