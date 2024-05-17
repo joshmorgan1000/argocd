@@ -44,3 +44,7 @@ apache:
           mountPath: /config
         - name: apache-volume
           mountPath: /opt/bitnami/apache/htdocs
+  lifecycleHooks:
+    postStart:
+      exec:
+        command: ["/bin/sh", "-c", "apt-get update && apt-get install -y php libapache2-mod-php && apachectl restart"]
