@@ -1,45 +1,46 @@
-replicaCount: 1
-image:
-  repository: bitnami/apache
-  tag: latest
-service:
-  type: LoadBalancer
-  port: 80
-
-# Additional volumes to mount the ConfigMap files
-extraVolumeMounts:
-  - name: apache-index
-    mountPath: /opt/bitnami/apache/htdocs/index.html
-    subPath: index.html
-  - name: php-endpoints
-    mountPath: /opt/bitnami/apache/htdocs/endpoints/messages.php
-    subPath: messages.php
-
-extraVolumes:
-  - name: apache-index
-    configMap:
-      name: apache-index
-  - name: php-endpoints
-    configMap:
-      name: php-endpoints
-  - name: apache-volume
-    emptyDir: {}
-
-# Init container to copy ConfigMap files to the appropriate locations
-initContainers:
-  - name: init-copy-index
-    image: busybox
-    command: ['sh', '-c', 'cp /config/index.html /opt/bitnami/apache/htdocs/index.html']
-    volumeMounts:
-      - name: apache-index
-        mountPath: /config
-      - name: apache-volume
-        mountPath: /opt/bitnami/apache/htdocs
-  - name: init-copy-php
-    image: busybox
-    command: ['sh', '-c', 'mkdir -p /opt/bitnami/apache/htdocs/endpoints && cp /config/messages.php /opt/bitnami/apache/htdocs/endpoints/messages.php']
-    volumeMounts:
-      - name: php-endpoints
-        mountPath: /config
-      - name: apache-volume
-        mountPath: /opt/bitnami/apache/htdocs
+apache:
+  replicaCount: 1
+  image:
+    repository: bitnami/apache
+    tag: latest
+  service:
+    type: LoadBalancer
+    port: 80
+  
+  # Additional volumes to mount the ConfigMap files
+  extraVolumeMounts:
+    - name: apache-index
+      mountPath: /opt/bitnami/apache/htdocs/index.html
+      subPath: index.html
+    - name: php-endpoints
+      mountPath: /opt/bitnami/apache/htdocs/endpoints/messages.php
+      subPath: messages.php
+  
+  extraVolumes:
+    - name: apache-index
+      configMap:
+        name: apache-index
+    - name: php-endpoints
+      configMap:
+        name: php-endpoints
+    - name: apache-volume
+      emptyDir: {}
+  
+  # Init container to copy ConfigMap files to the appropriate locations
+  initContainers:
+    - name: init-copy-index
+      image: busybox
+      command: ['sh', '-c', 'cp /config/index.html /opt/bitnami/apache/htdocs/index.html']
+      volumeMounts:
+        - name: apache-index
+          mountPath: /config
+        - name: apache-volume
+          mountPath: /opt/bitnami/apache/htdocs
+    - name: init-copy-php
+      image: busybox
+      command: ['sh', '-c', 'mkdir -p /opt/bitnami/apache/htdocs/endpoints && cp /config/messages.php /opt/bitnami/apache/htdocs/endpoints/messages.php']
+      volumeMounts:
+        - name: php-endpoints
+          mountPath: /config
+        - name: apache-volume
+          mountPath: /opt/bitnami/apache/htdocs
