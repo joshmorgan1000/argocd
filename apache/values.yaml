@@ -10,13 +10,13 @@ apache:
     type: LoadBalancer
     port: 80
 
-## Configuration to mount the PHP file ConfigMap
+## Configuration to mount the index.html ConfigMap
 extraVolumeMounts:
-  - name: php-endpoints
-    mountPath: /var/www/html/endpoints
-    subPath: messages.php
+  - name: apache-index
+    mountPath: /opt/bitnami/apache/htdocs/index.html
+    subPath: index.html
 
 extraVolumes:
-  - name: php-endpoints
+  - name: apache-index
     configMap:
-      name: php-endpoints
+      name: apache-index
