@@ -8,3 +8,8 @@ dependencies:
   - name: apache
     version: 11.0.5
     repository: https://charts.bitnami.com/bitnami
+  - name: common
+    repository: oci://registry-1.docker.io/bitnamicharts
+    tags:
+      - bitnami-common
+    version: 2.x.x
