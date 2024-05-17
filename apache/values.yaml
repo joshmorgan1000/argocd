@@ -30,7 +30,7 @@ apache:
     enabled: false
     annotations: {}
     hosts:
-      - name: example.com
+      - name: apache.apache.svc.service.local
         path: /
     tls: []
 
@@ -72,3 +72,12 @@ apache:
   containerSecurityContext:
     enabled: true
     runAsUser: 1001
+
+extraVolumeMounts:
+  - name: php-files
+    mountPath: /var/www/html/
+
+extraVolumes:
+  - name: php-files
+    configMap:
+      name: php-files
