@@ -13,3 +13,5 @@ dependencies:
     tags:
       - bitnami-common
     version: 2.x.x
+keywords:
+  - php
