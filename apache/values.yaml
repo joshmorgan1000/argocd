@@ -1,0 +1,74 @@
+apache:
+  image:
+    registry: docker.io
+    repository: bitnami/apache
+    tag: 2.4.46-debian-10-r0
+
+  replicaCount: 1
+
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+    successThreshold: 1
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    annotations: {}
+    hosts:
+      - name: example.com
+        path: /
+    tls: []
+
+  metrics:
+    enabled: false
+    service:
+      annotations: {}
+      clusterIP: ""
+      servicePort: 9117
+      targetPort: 9117
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
+    serviceMonitor:
+      enabled: false
+      namespace: monitoring
+      interval: 30s
+      scrapeTimeout: 10s
+      labels: {}
+      relabelings: []
+      metricRelabelings: []
+
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessModes:
+      - ReadWriteOnce
+    size: 8Gi
+
+  resources:
+    limits: {}
+    requests: {}
+
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
