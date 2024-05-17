@@ -1,13 +1,13 @@
 apache:
   replicaCount: 1
   image:
+    registry: docker.io
     repository: bitnami/apache
     tag: latest
   service:
     type: LoadBalancer
     port: 80
-  
-  # Additional volumes to mount the ConfigMap files
+
   extraVolumeMounts:
     - name: apache-index
       mountPath: /opt/bitnami/apache/htdocs/index.html
@@ -15,7 +15,7 @@ apache:
     - name: php-endpoints
       mountPath: /opt/bitnami/apache/htdocs/endpoints/messages.php
       subPath: messages.php
-  
+
   extraVolumes:
     - name: apache-index
       configMap:
@@ -25,8 +25,7 @@ apache:
         name: php-endpoints
     - name: apache-volume
       emptyDir: {}
-  
-  # Init container to copy ConfigMap files to the appropriate locations
+
   initContainers:
     - name: init-copy-index
       image: busybox
@@ -44,7 +43,32 @@ apache:
           mountPath: /config
         - name: apache-volume
           mountPath: /opt/bitnami/apache/htdocs
-  lifecycleHooks:
-    postStart:
-      exec:
-        command: ["/bin/sh", "-c", "apt-get update && apt-get install -y php libapache2-mod-php && apachectl restart"]
+
+  extraDeploy:
+    - apiVersion: v1
+      kind: Pod
+      metadata:
+        name: install-php
+      spec:
+        initContainers:
+          - name: install-php
+            image: bitnami/apache:latest
+            command: ["/bin/bash", "-c"]
+            args:
+              - |
+                apt-get update && apt-get install -y php libapache2-mod-php
+                echo "LoadModule php7_module modules/libphp7.so" >> /opt/bitnami/apache/conf/httpd.conf
+                echo "AddHandler php7-script .php" >> /opt/bitnami/apache/conf/httpd.conf
+                echo "Include conf/extra/php7_module.conf" >> /opt/bitnami/apache/conf/httpd.conf
+                apachectl restart
+            volumeMounts:
+              - name: apache-volume
+                mountPath: /opt/bitnami/apache/htdocs
+        containers:
+          - name: wait
+            image: bitnami/apache:latest
+            command: ["/bin/bash", "-c", "sleep 600"]
+        volumes:
+          - name: apache-volume
+            emptyDir: {}
+        restartPolicy: OnFailure
